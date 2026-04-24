@@ -3,7 +3,7 @@ export default function SearchBar({ setSearch }) {
     <input
       type="text"
       placeholder="Search Tamil movies..."
-      className="w-full p-3 rounded-xl border shadow-sm focus:outline-none"
+      className="bg-black text-white w-full p-3 rounded-xl border shadow-sm focus:outline-none"
       onChange={(e) => setSearch(e.target.value)}
     />
   );

@@ -1,44 +1,80 @@
 import { useParams, useNavigate } from "react-router-dom";
-import movies from "../data/movies.json";
-import Rating from "../components/Rating";
+import { useEffect, useState } from "react";
 
 export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [movie, setMovie] = useState(null);
 
-  const movie = movies.find((m) => m.id === parseInt(id));
+  useEffect(() => {
+    fetch(`https://www.omdbapi.com/?i=${id}&apikey=ee916882`)
+      .then((res) => res.json())
+      .then((data) => setMovie(data));
+  }, [id]);
 
-  if (!movie) return <h2>Movie not found</h2>;
+  if (!movie) return <h2 className="text-white p-6">Loading...</h2>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      
+    <div className="min-h-screen bg-black text-white p-6">
+
+      {/* 🔙 Back */}
       <button
         onClick={() => navigate(-1)}
-        className="mb-4 px-4 py-2 bg-black text-white rounded"
+        className="mb-6 px-4 py-2 bg-gray-800 rounded"
       >
         ⬅ Back
       </button>
 
-      <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col md:flex-row gap-6">
-        
+      <div className="flex flex-col md:flex-row gap-8">
+
+        {/* 🎬 Poster */}
         <img
-          src={movie.image}
+          src={
+            movie.Poster !== "N/A"
+              ? movie.Poster
+              : `/images/${movie.imdbID}.jpg`
+          }
           className="w-full md:w-1/3 rounded-xl"
         />
 
+        {/* 📄 Details */}
         <div>
-          <h1 className="text-3xl font-bold">{movie.title}</h1>
-          <p className="text-gray-500 mt-2">
-            {movie.year} • {movie.genre}
+          <h1 className="text-3xl font-bold">{movie.Title}</h1>
+
+          <p className="text-gray-400 mt-2">
+            {movie.Year} • {movie.Genre}
           </p>
 
-          <p className="mt-4">{movie.description}</p>
+          <p className="mt-4">{movie.Plot}</p>
 
-          <h3 className="mt-4 font-semibold">Rate this movie:</h3>
-          <Rating value={movie.rating} />
+          <p className="mt-4">
+            <b>Cast:</b> {movie.Actors}
+          </p>
+
+          <p>
+            <b>Director:</b> {movie.Director}
+          </p>
+
+          <p>
+            <b>IMDb Rating:</b> ⭐ {movie.imdbRating}
+          </p>
         </div>
       </div>
+
+      {/* 🎥 Trailer Section */}
+      <div className="mt-10">
+        <h2 className="text-xl font-bold mb-4">Watch Trailer</h2>
+
+        <a
+  href={`https://www.youtube.com/results?search_query=${movie.Title} trailer`}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="inline-block mt-4 px-6 py-3 bg-red-600 rounded-lg"
+>
+  ▶ Watch Trailer on YouTube
+</a>
+      </div>
+
     </div>
   );
 }
